@@ -760,6 +760,19 @@ describe('test-reader/mocha-test-parser', () => {
                 assert.isTrue(Boolean(tests[0].pending));
                 assert.isTrue(Boolean(tests[0].silentSkip));
             });
+
+            it('should throw error if there are no tests', () => {
+                const mochaTestParser = mkMochaTestParser_();
+
+                const test = new MochaStub.Test(null, {title: 'test title'});
+                MochaStub.lastInstance.updateSuiteTree((suite) => suite.addTest(test));
+
+                try {
+                    mochaTestParser.applyGrep('foo').parse();
+                } catch (e) {
+                    assert.match(e.message, /There are no tests/);
+                }
+            });
         });
     });
 });

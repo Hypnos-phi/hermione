@@ -54,11 +54,17 @@ describe('test-reader', () => {
         it('should create set-builder with sets from config and default directory', async () => {
             const defaultDir = require('../../../package').name;
 
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
             await readTests_({
                 config: makeConfigStub({
                     sets: {
                         all: {}
-                    }
+                    },
+                    browsers: ['bro']
                 })
             });
 
@@ -67,57 +73,132 @@ describe('test-reader', () => {
         });
 
         it('should use passed paths', async () => {
-            await readTests_({paths: ['some/path']});
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                }),
+                paths: ['some/path']
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.useFiles, ['some/path']);
         });
 
         it('should use passed sets', async () => {
-            await readTests_({sets: ['set1']});
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                }),
+                sets: ['set1']
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.useSets, ['set1']);
         });
 
         it('should use sets from environment variable "HERMIONE_SETS"', async () => {
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
             process.env.HERMIONE_SETS = 'set1,set2';
 
-            await readTests_({sets: null});
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                }),
+                sets: null
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.useSets, ['set1', 'set2']);
         });
 
         it('should concat passed sets with sets from environment variable "HERMIONE_SETS"', async () => {
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
             process.env.HERMIONE_SETS = 'set2';
 
-            await readTests_({sets: ['set1']});
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                }),
+                sets: ['set1']
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.useSets, ['set1', 'set2']);
         });
 
         it('should use pased browsers', async () => {
-            await readTests_({browsers: ['bro1']});
+            const groupByBrowser = sinon.stub().returns({
+                bro1: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro1']
+                }),
+                browsers: ['bro1']
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.useBrowsers, ['bro1']);
         });
 
         it('should build set-collection using working directory', async () => {
-            await readTests_();
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                })
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.build, process.cwd());
         });
 
         it('should pass ignore files to build', async () => {
-            await readTests_({ignore: 'foo/bar'});
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                }),
+                ignore: 'foo/bar'
+            });
 
             assert.calledOnceWith(SetsBuilder.prototype.build, sinon.match.any, {ignore: 'foo/bar'});
         });
 
         it('should pass file extensions to build from config', async () => {
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
             const fileExtensions = ['.foo', '.bar'];
 
             await readTests_({
                 config: makeConfigStub({
-                    system: {fileExtensions}
+                    system: {fileExtensions},
+                    browsers: ['bro']
                 })
             });
 
@@ -125,7 +206,16 @@ describe('test-reader', () => {
         });
 
         it('should call set-builder methods in rigth order', async () => {
-            await readTests_();
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
+            SetsBuilder.prototype.build.resolves({groupByBrowser});
+
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                })
+            });
 
             assert.callOrder(
                 SetsBuilder.create,
@@ -137,10 +227,16 @@ describe('test-reader', () => {
         });
 
         it('should group files by browser', async () => {
-            const groupByBrowser = sinon.stub().returns({});
+            const groupByBrowser = sinon.stub().returns({
+                bro: []
+            });
             SetsBuilder.prototype.build.resolves({groupByBrowser});
 
-            await readTests_();
+            await readTests_({
+                config: makeConfigStub({
+                    browsers: ['bro']
+                })
+            });
 
             assert.calledOnce(groupByBrowser);
         });
